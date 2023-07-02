@@ -1,0 +1,16 @@
+{
+  "name": "shopping-cart",
+  "version": "1.0.0",
+  "description": "this is a sample shopping cart application which consists all the necessary functions and practices of modern node js",
+  "main": "app.js",
+  "scripts": {
+    "start" : "nodemon server.js"
+  },
+  "repository": "https://github.com/lakmalsathyajith/node-basics.git",
+  "author": "Sathyajith <slakmal68@gmail.com>",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
