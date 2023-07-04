@@ -1,0 +1,9 @@
+dist/
+.cache/
+node_modules
+package.json
+.env
+yarn.lock
+yarn-error.log
+.gitignore
+.history
