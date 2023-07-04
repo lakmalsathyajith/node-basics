@@ -15,6 +15,7 @@ const userSchema = new mongoose.Schema({
     type: 'string',
     required: [true, 'Password is required.'],
     minlength: 8,
+    select: false,
   },
   passwordConfirm: {
     type: 'string',
@@ -25,6 +26,11 @@ const userSchema = new mongoose.Schema({
       },
       message: 'Password confirmation failed.',
     },
+  },
+  role: {
+    type: 'string',
+    enum: ['admin', 'seller', 'buyer'],
+    default: 'buyer',
   },
   created_at: {
     type: Date,

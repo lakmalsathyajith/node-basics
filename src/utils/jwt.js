@@ -1,5 +1,4 @@
 const jwt = require('jsonwebtoken');
-const { promisify } = require('util');
 const { User } = require('../models/user');
 
 const sign = (options) =>
@@ -17,8 +16,8 @@ const protected = async (req, res, next) => {
   const authorization = req.headers.authorization;
   let token;
   if (authorization && authorization.startsWith('Bearer ')) {
-    token = req.headers.authorization.split(' ')[1];
-    console.log(token);
+    token = req.headers.authorization.split(' ')[1].trim();
+    console.log(token, process.env.JWT_SECRET);
   }
 
   if (!token) {
@@ -27,21 +26,20 @@ const protected = async (req, res, next) => {
   }
 
   // adding this to make it a promise to be catch in the error catcher
-  const decodedToken = await promisify(jwt.verify)(
-    (token, process.env.JWT_SECRET)
-  );
+  const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
 
   // check whether the user is deleted in the middle.
   const existingUser = await User.findById(decodedToken.id);
   if (!existingUser) {
-    // TODO prompt error
+    // TODO: prompt error
   }
 
   // check whether the given user is changed password after token creation.
   if (existingUser.tokenTimestampValidate(decodedToken.iat)) {
-    // TODO prompt error
+    // TODO: prompt error
   }
 
+  // make user available in the request after successful authentication.
   req.user = existingUser;
   next();
 };

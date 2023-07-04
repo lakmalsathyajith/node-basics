@@ -1,4 +1,5 @@
 const { StatusCodes } = require('http-status-codes');
+const { roles } = require('../server/roles');
 const { jwt } = require('./../utils/jwt');
 const { User } = require('./../models/user');
 
@@ -12,9 +13,11 @@ const login = async (req, res) => {
     email,
   }).select('+password');
 
-  const isCorrectPassword = user.passwordCheck(password, user.password);
+  const isCorrectPassword = await user.passwordCheck(password, user.password);
 
+  console.log(user, isCorrectPassword, password, user.password);
   if (!user || !isCorrectPassword) {
+    throw new Error();
     // TODO: handle error
   }
 
@@ -35,8 +38,14 @@ const logout = async (req, res) => {
 };
 
 const signUp = async (req, res) => {
-  const { name, email, password, passwordConfirm } = req.body;
-  const newUser = await User.create({ name, email, password, passwordConfirm });
+  const { name, email, password, passwordConfirm, role } = req.body;
+  const newUser = await User.create({
+    name,
+    email,
+    password,
+    passwordConfirm,
+    role,
+  });
   const token = jwt.sign({
     id: newUser._id,
   });
@@ -54,9 +63,23 @@ const getMe = async (req, res) => {
   res.status(StatusCodes.OK).json(user);
 };
 
+// Role-based access control
+const grantAccess = (action, resource) => {
+  // TODO: need to extend this to support multiple resources
+  return async (req, res, next) => {
+    const permission = roles.can(req.user.role)[action](resource);
+    if (!permission.granted) {
+      // TODO: error handling need to be implemented
+      throw new Error('Access not permitted to this role');
+    }
+    next();
+  };
+};
+
 module.exports = {
   login,
   logout,
   getMe,
   signUp,
+  grantAccess,
 };
