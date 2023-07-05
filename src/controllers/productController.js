@@ -38,7 +38,6 @@ const getProducts = async (req, res) => {
     productAggregation.push({
       $match: { 'seller.name': regexSellerName },
     });
-    //productAggregation.push(sellerProjections);
   }
 
   if (queryObj['category']) {
@@ -68,12 +67,23 @@ const getProducts = async (req, res) => {
   let productList;
   if (productAggregation.length > 0) {
     productAggregation.push({
+      $match: { deleted: { $ne: true } },
+    });
+    productAggregation.push({
       $project: aggregationProjection,
     });
 
     productList = await Product.aggregate(productAggregation);
   } else {
-    productList = await Product.find({});
+    productList = await Product.find({ deleted: { $ne: true } }, { __v: 0 })
+      .populate({
+        path: 'seller',
+        select: { name: 1, email: 1, _id: 0 },
+      })
+      .populate({
+        path: 'category',
+        select: { name: 1, description: 1, _id: 0 },
+      });
   }
   sendResponse(res, { products: productList }, StatusCodes.OK);
 };
