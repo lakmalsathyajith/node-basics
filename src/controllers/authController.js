@@ -3,6 +3,7 @@ const { roles } = require('../server/roles');
 const { jwt } = require('./../utils/jwt');
 const { User } = require('./../models/user');
 const AppError = require('../errors/appError');
+const sendResponse = require('../utils/response');
 
 const login = async (req, res) => {
   const { email, password } = req.body;
@@ -18,8 +19,6 @@ const login = async (req, res) => {
   }).select('+password');
 
   const isCorrectPassword = await user.passwordCheck(password, user.password);
-
-  console.log(user, isCorrectPassword, password, user.password);
   if (!user || !isCorrectPassword) {
     throw new AppError('Incorrect password.', StatusCodes.UNAUTHORIZED);
   }
@@ -27,17 +26,11 @@ const login = async (req, res) => {
   const token = jwt.sign({
     id: user._id,
   });
-  res.status(StatusCodes.CREATED).json({
-    status: 'success',
-    data: {
-      token,
-    },
-  });
+  sendResponse(res, { token }, StatusCodes.CREATED);
 };
 
 const logout = async (req, res) => {
-  const usersList = await User.find({});
-  res.status(StatusCodes.OK).json(usersList);
+  sendResponse(res, {}, StatusCodes.OK);
 };
 
 const signUp = async (req, res) => {
@@ -52,13 +45,7 @@ const signUp = async (req, res) => {
   const token = jwt.sign({
     id: newUser._id,
   });
-  res.status(StatusCodes.CREATED).json({
-    status: 'success',
-    token,
-    data: {
-      user: newUser,
-    },
-  });
+  sendResponse(res, { user: newUser }, StatusCodes.CREATED);
 };
 
 const getMe = async (req, res) => {

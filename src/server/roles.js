@@ -14,7 +14,8 @@ exports.roles = (function () {
     .createAny('categories')
     .updateAny('categories')
     .deleteAny('categories')
-    .createAny('products');
+    .createAny('products')
+    .updateAny('products');
 
   ac.grant('admin')
     .extend('buyer')

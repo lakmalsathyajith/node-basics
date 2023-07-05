@@ -1,14 +1,15 @@
 const { StatusCodes } = require('http-status-codes');
 const { ProductCategory } = require('./../models/productCategory');
+const sendResponse = require('../utils/response');
 
 const getCategories = async (req, res) => {
   const categoryList = await ProductCategory.find({});
-  res.status(StatusCodes.OK).json(categoryList);
+  sendResponse(res, { categories: categoryList }, StatusCodes.OK);
 };
 
 const getCategory = async (req, res) => {
   const category = await ProductCategory.findById(req.params.id);
-  res.status(StatusCodes.OK).json(category);
+  sendResponse(res, { category }, StatusCodes.OK);
 };
 
 const deleteCategory = async (req, res) => {
@@ -18,13 +19,13 @@ const deleteCategory = async (req, res) => {
       deleted: true,
     }
   );
-  res.status(StatusCodes.ACCEPTED).json(deletedCategory);
+  sendResponse(res, { category: deletedCategory }, StatusCodes.ACCEPTED);
 };
 
 const createCategory = async (req, res) => {
   const { name, description } = req.body;
   const newCategory = await ProductCategory.create({ name, description });
-  res.status(StatusCodes.CREATED).json(newCategory);
+  sendResponse(res, { category: newCategory }, StatusCodes.CREATED);
 };
 
 module.exports = {

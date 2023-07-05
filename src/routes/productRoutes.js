@@ -29,6 +29,11 @@ productRouter
     authController.grantAccess('readAny', 'products'),
     productController.getProduct
   )
+  .patch(
+    protected,
+    authController.grantAccess('updateAny', 'products'),
+    productController.updateProduct
+  )
   .delete(
     protected,
     authController.grantAccess('deleteAny', 'products'),
