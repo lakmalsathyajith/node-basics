@@ -38,7 +38,6 @@ const getProducts = async (req, res) => {
     productAggregation.push({
       $match: { 'seller.name': regexSellerName },
     });
-    //productAggregation.push(sellerProjections);
   }
 
   if (queryObj['category']) {
