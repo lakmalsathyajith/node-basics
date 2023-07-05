@@ -1,3 +1,5 @@
+const { StatusCodes } = require('http-status-codes');
+
 const invalidRouteErrorMiddleware = (req, res, next) => {
   res.status(StatusCodes.NOT_FOUND).json({
     status: 'failed',
