@@ -2,11 +2,15 @@ const { StatusCodes } = require('http-status-codes');
 const { roles } = require('../server/roles');
 const { jwt } = require('./../utils/jwt');
 const { User } = require('./../models/user');
+const AppError = require('../errors/appError');
 
 const login = async (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) {
-    // TODO: handle error
+    throw new AppError(
+      'Email or password field is missing',
+      StatusCodes.UNAUTHORIZED
+    );
   }
 
   const user = await User.findOne({
@@ -17,8 +21,7 @@ const login = async (req, res) => {
 
   console.log(user, isCorrectPassword, password, user.password);
   if (!user || !isCorrectPassword) {
-    throw new Error();
-    // TODO: handle error
+    throw new AppError('Incorrect password.', StatusCodes.UNAUTHORIZED);
   }
 
   const token = jwt.sign({
@@ -65,12 +68,13 @@ const getMe = async (req, res) => {
 
 // Role-based access control
 const grantAccess = (action, resource) => {
-  // TODO: need to extend this to support multiple resources
   return async (req, res, next) => {
     const permission = roles.can(req.user.role)[action](resource);
     if (!permission.granted) {
-      // TODO: error handling need to be implemented
-      throw new Error('Access not permitted to this role');
+      throw new Error(
+        'Access not permitted to this role',
+        StatusCodes.FORBIDDEN
+      );
     }
     next();
   };
