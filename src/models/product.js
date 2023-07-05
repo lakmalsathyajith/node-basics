@@ -14,12 +14,14 @@ const productSchema = new mongoose.Schema({
     type: 'number',
     required: [true, 'Price is required.'],
   },
-  category: [
-    {
-      type: mongoose.Schema.ObjectId,
-      ref: 'categories',
-    },
-  ],
+  category: {
+    type: mongoose.Schema.ObjectId,
+    ref: 'categories',
+  },
+  seller: {
+    type: mongoose.Schema.ObjectId,
+    ref: 'users',
+  },
   created_at: {
     type: Date,
     default: Date.now(),
